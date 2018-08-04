@@ -6,6 +6,7 @@ public class Logic2 {
     private static int numberAnswer = 0;
     private static int numberLetter = 0;
     private static int previousLenghtOfFilterCopies = 1;
+    private static int checkChanges = 0;
     private Scanner scanner = new Scanner(System.in);
     private Set<Integer> filterCopies = new LinkedHashSet<>();
     private List<String> maskedAnswer = new ArrayList<>();
@@ -21,36 +22,34 @@ public class Logic2 {
     }
 
     private void scanAnswer(int numberQuestion) {
-        char[] playerAnsverLetters = QuestionsAndAnsvers.getAnsver(numberQuestion).toCharArray();
+        char[] ansverLetters = QuestionsAndAnsvers.getAnsver(numberQuestion).toCharArray();
         String enterLetter = scanner.next().toLowerCase();
         if (enterLetter.length() < 2) {
-            checkLetter(playerAnsverLetters,enterLetter,numberQuestion);
+            checkLetter(ansverLetters,enterLetter,numberQuestion);
         } else {
             System.out.println("Неправильний ввід даних, спробуйте ще раз\nВведіть одну літеру: ");
             scanAnswer(numberQuestion);
         }
     }
 
-    private void checkLetter(char[] playerAnsverLetters,String enterLetter,int numberQuestion) {
-        if (playerAnsverLetters[numberLetter] == enterLetter.charAt(0)){
-            if (numberLetter != QuestionsAndAnsvers.getAnsver(numberQuestion).length() ) {
-                maskedAnswerWithLetter(numberQuestion);
-                scanAnswer(numberQuestion);
-            } else {
-                oneMoreGame();
+    private void checkLetter(char[] ansverLetters, String enterLetter, int numberQuestion) {
+        for (int i = 0; i < QuestionsAndAnsvers.getAnsver(numberQuestion).length(); i++) {
+            if (ansverLetters[i] == enterLetter.charAt(0)) {
+                if (maskedAnswer.get(i).charAt(0) == '*') {
+                    maskedAnswerWithLetter(numberQuestion, i);
+                    checkChanges++;
+                    break;
+                }
             }
+        }
+        if (checkChanges > 0) {
+            checkChanges=0;
+            scanAnswer(numberQuestion);
         } else {
-            System.out.println("Спробуйте ще раз:\n");
-            tries++;
-            if (tries >= 5) {
-                System.out.println("Можливо потрібна допога?");
-                System.out.println("(так/ні)");
-                help(numberQuestion);
-            }
-            start(numberQuestion);
+            System.out.println("Такої букви немає, спробуйте ще раз");
+            scanAnswer(numberQuestion);
         }
     }
-
 
     private void help(int numberQuestion) {
         String yesOrNo = scanner.next().toLowerCase();
@@ -82,20 +81,17 @@ public class Logic2 {
         }
     }
 
-    private void maskedAnswerWithLetter(int numberQuestion) {
-        numberLetter++;
-        for (int i = 0; i <amountOfShovedLetters ; i++) {
-            maskedAnswer.set(i,answer.get(i));
-                    if (amountOfShovedLetters == QuestionsAndAnsvers.getAnsver(numberQuestion).length()) {
-                        System.out.println(answer+"\n");
-                        System.out.println("Бажаєте зіграти ще? (так/ні)");
-                        tries = 0;
-                        amountOfShovedLetters = 1;
-                        numberLetter = 0;
-                        maskedAnswer.clear();
-                        answer.clear();
-                        oneMoreGame();
-                    }
+    private void maskedAnswerWithLetter(int numberQuestion, int numberLetter) {
+        maskedAnswer.set(numberLetter, answer.get(numberLetter));
+        if (amountOfShovedLetters == QuestionsAndAnsvers.getAnsver(numberQuestion).length()) {
+            System.out.println(answer + "\n");
+            System.out.println("Бажаєте зіграти ще? (так/ні)");
+            tries = 0;
+            amountOfShovedLetters = 1;
+            Logic2.numberLetter = 0;
+            maskedAnswer.clear();
+            answer.clear();
+            oneMoreGame();
         }
         amountOfShovedLetters++;
         System.out.println(maskedAnswer.toString());
@@ -139,7 +135,12 @@ public class Logic2 {
         System.out.println("(літера/cлово)");
         String wordOrLetter = scanner.next().toLowerCase();
         if (wordOrLetter.equals("літера")) {
-            maskedAnswerWithLetter(numberQuestion);
+            for (int i = 0; i < QuestionsAndAnsvers.getAnsver(numberQuestion).length(); i++) {
+                if (maskedAnswer.get(i).charAt(0) == '*') {
+                    maskedAnswer.set(i, answer.get(i));
+                    break;
+                }
+            }
             start(numberQuestion);
             tries = 0;
         } else if (wordOrLetter.equals("слово")) {
