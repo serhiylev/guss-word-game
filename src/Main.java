@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Logic2 logic = new Logic2();
+        Logiс logic = new Logiс();
         System.out.println("   ||Guss Word Game||\n\n to start press Enter");
         Scanner scanner = new Scanner(System.in);
         Random random = new Random();
@@ -11,6 +11,5 @@ public class Main {
             int numberQuestion = 1+ random.nextInt(6);
             logic.start(numberQuestion);
         }
-
     }
 }

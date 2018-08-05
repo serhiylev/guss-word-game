@@ -1,10 +1,9 @@
 import java.util.*;
 
-public class Logic2 {
+public class Logiс {
     private static int tries = 0;
     private static int amountOfShovedLetters = 1;
     private static int numberAnswer = 0;
-    private static int numberLetter = 0;
     private static int previousLenghtOfFilterCopies = 1;
     private static int checkChanges = 0;
     private Scanner scanner = new Scanner(System.in);
@@ -36,6 +35,7 @@ public class Logic2 {
         for (int i = 0; i < QuestionsAndAnsvers.getAnsver(numberQuestion).length(); i++) {
             if (ansverLetters[i] == enterLetter.charAt(0)) {
                 if (maskedAnswer.get(i).charAt(0) == '*') {
+                    tries = 0;
                     maskedAnswerWithLetter(numberQuestion, i);
                     checkChanges++;
                     break;
@@ -46,8 +46,15 @@ public class Logic2 {
             checkChanges=0;
             scanAnswer(numberQuestion);
         } else {
-            System.out.println("Такої букви немає, спробуйте ще раз");
-            scanAnswer(numberQuestion);
+            if (tries > 4) {
+                System.out.println("Можливо потрібна допомога?");
+                System.out.println("(так/ні)");
+                help(numberQuestion);
+                } else {
+                System.out.println("Такої букви немає, спробуйте ще раз");
+                tries++;
+                scanAnswer(numberQuestion);
+            }
         }
     }
 
@@ -88,7 +95,6 @@ public class Logic2 {
             System.out.println("Бажаєте зіграти ще? (так/ні)");
             tries = 0;
             amountOfShovedLetters = 1;
-            Logic2.numberLetter = 0;
             maskedAnswer.clear();
             answer.clear();
             oneMoreGame();
@@ -122,6 +128,7 @@ public class Logic2 {
                 randomQuestionsWithoutRepeats();
                 break;
             case "ні":
+
                 break;
             default:
                 System.out.println("Неправильні параметри вводу, спробуйте ще раз :\n");
@@ -134,26 +141,30 @@ public class Logic2 {
         System.out.println("Ок, показати одну літеру чи ціле слово?");
         System.out.println("(літера/cлово)");
         String wordOrLetter = scanner.next().toLowerCase();
-        if (wordOrLetter.equals("літера")) {
-            for (int i = 0; i < QuestionsAndAnsvers.getAnsver(numberQuestion).length(); i++) {
-                if (maskedAnswer.get(i).charAt(0) == '*') {
-                    maskedAnswer.set(i, answer.get(i));
-                    break;
+        switch (wordOrLetter) {
+            case "літера":
+                for (int i = 0; i < QuestionsAndAnsvers.getAnsver(numberQuestion).length(); i++) {
+                    if (maskedAnswer.get(i).charAt(0) == '*') {
+                        maskedAnswer.set(i, answer.get(i));
+                        break;
+                    }
                 }
-            }
-            start(numberQuestion);
-            tries = 0;
-        } else if (wordOrLetter.equals("слово")) {
-            System.out.println("\n" + QuestionsAndAnsvers.getAnsver(numberQuestion));
-            System.out.println("Бажаєте зіграти ще? (так/ні)");
-            maskedAnswer.clear();
-            answer.clear();
-            tries = 0;
-            amountOfShovedLetters = 1;
-            oneMoreGame();
-        } else {
-            System.out.println("Неправильне введення, спробуйте ще раз");
-            wordOrLetter(numberQuestion);
+                start(numberQuestion);
+                tries = 0;
+                break;
+            case "слово":
+                System.out.println("\n" + QuestionsAndAnsvers.getAnsver(numberQuestion));
+                System.out.println("Бажаєте зіграти ще? (так/ні)");
+                maskedAnswer.clear();
+                answer.clear();
+                tries = 0;
+                amountOfShovedLetters = 1;
+                oneMoreGame();
+                break;
+            default:
+                System.out.println("Неправильне введення, спробуйте ще раз");
+                wordOrLetter(numberQuestion);
+                break;
         }
     }
 }
